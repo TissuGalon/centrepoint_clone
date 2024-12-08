@@ -1,100 +1,100 @@
 import 'dart:io';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:path_provider/path_provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:policy_centrepoint/CONFIGURATION/configuration.dart';
+import 'package:policy_centrepoint/VIEWS/ADMIN/CompreFaceAdmin/Service/CompreUserService.dart';
 
 class FaceDatasetPage extends StatefulWidget {
+  final String username;
+  final UserService userService;
+
+  FaceDatasetPage({required this.username, required this.userService});
+
   @override
   _FaceDatasetPageState createState() => _FaceDatasetPageState();
 }
 
 class _FaceDatasetPageState extends State<FaceDatasetPage> {
-  late CameraController _cameraController;
-  late Future<void> _initializeControllerFuture;
-  bool _isDetecting = false;
-  String _result = '';
-  List<CameraDescription>? cameras;
+  File? _image;
+  List<Map<String, dynamic>> _photos = [];
+  final ImagePicker _picker = ImagePicker();
+  bool _isUploading = false; // Add upload state flag
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    _addUser(widget.username);
+    _fetchPhotos();
   }
 
-  Future<void> _initializeCamera() async {
-    cameras = await availableCameras();
-    if (cameras != null && cameras!.isNotEmpty) {
-      _startCamera(cameras!.first);
+  Future<void> _addUser(String username) async {
+    if (username.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Data User tidak terdaftar')));
+      return;
+    }
+
+    await widget.userService.addUser(username);
+    Navigator.pop(context); // Return to user list screen
+  }
+
+  Future<void> _fetchPhotos() async {
+    try {
+      final photos = await widget.userService.fetchUserPhotos(widget.username);
+      setState(() {
+        _photos = photos;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to load photos:')));
     }
   }
 
-  void _startCamera(CameraDescription camera) {
-    _cameraController = CameraController(
-      camera,
-      ResolutionPreset.high,
-    );
-    _initializeControllerFuture = _cameraController.initialize();
-    setState(() {}); // To trigger a rebuild when the camera is initialized
-  }
-
-  Future<void> _captureAndDetectFace() async {
-    if (_isDetecting) return;
+  Future<void> _addPhoto() async {
+    if (_image == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please take a photo first')));
+      return;
+    }
 
     setState(() {
-      _isDetecting = true;
-      _result = 'Detecting...';
+      _isUploading = true; // Show loading indicator
     });
 
     try {
-      await _initializeControllerFuture;
-
-      final image = await _cameraController.takePicture();
-      final tempDir = await getTemporaryDirectory();
-      final tempFile = File('${tempDir.path}/face_image.jpg');
-      await tempFile.writeAsBytes(await image.readAsBytes());
-
-      final response = await _detectFace(tempFile);
-
-      setState(() {
-        _result = response ?? 'No face detected or error.';
-      });
+      await widget.userService.addPhoto(widget.username, _image!);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Photo uploaded successfully')));
+      _fetchPhotos(); // Refresh photo list
     } catch (e) {
-      setState(() {
-        _result = 'Error: $e';
-      });
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to upload photo')));
     } finally {
       setState(() {
-        _isDetecting = false;
+        _isUploading = false; // Hide loading indicator
       });
     }
   }
 
-  Future<String?> _detectFace(File imageFile) async {
-    final baseUrl = '';
-    final apiKey = '';
-    final url = Uri.parse(
-        '${baseUrl}/api/v1/recognition/recognize?limit=1&det_prob_threshold=0.8&prediction_count=1');
-    final request = http.MultipartRequest('POST', url);
-    request.headers['x-api-key'] = apiKey;
-    request.files
-        .add(await http.MultipartFile.fromPath('file', imageFile.path));
+  Future<void> _takePhoto() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+      _addPhoto();
+    }
+  }
 
-    final response = await request.send();
-
-    if (response.statusCode == 200) {
-      final responseData = await response.stream.bytesToString();
-      final data = json.decode(responseData);
-
-      if (data['result'].isNotEmpty) {
-        final result = data['result'][0]['subjects'][0];
-        return 'Detected: ${result['subject']}';
-      } else {
-        return 'No face detected.';
-      }
-    } else {
-      return 'API Error: ${response.statusCode}';
+  Future<void> _deletePhoto(String imageId) async {
+    try {
+      await widget.userService.deletePhoto(imageId);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Photo deleted successfully')));
+      _fetchPhotos();
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to delete photo')));
     }
   }
 
@@ -102,65 +102,85 @@ class _FaceDatasetPageState extends State<FaceDatasetPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Face Dataset'),
+        elevation: 0,
         backgroundColor: Colors.white,
         centerTitle: true,
+        actions: [
+          Text(
+            'FACE DATASETS',
+            style: TextStyle(
+                color: Color(0xFF222222),
+                fontFamily: 'URW',
+                fontWeight: FontWeight.bold,
+                fontSize: 18),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          IconButton(
+            icon: Icon(Icons.camera_alt),
+            onPressed:
+                _isUploading ? null : _takePhoto, // Disable button if uploading
+          ),
+        ],
+        iconTheme: IconThemeData(
+          color: Warna.TextBold, // Mengubah warna ikon drawer
+        ),
       ),
-      body: Center(
+      backgroundColor: Warna.BG,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: _cameraController.value.isInitialized
-                  ? CameraPreview(_cameraController)
-                  : Center(child: CircularProgressIndicator()),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                _result,
-                style: TextStyle(fontSize: 16, color: Colors.black),
+            if (_isUploading) // Show loading indicator when uploading
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 8),
+                    Text('Uploading photo...')
+                  ],
+                ),
               ),
+            Expanded(
+              child: _photos.isEmpty
+                  ? Center(child: Text('No photos found'))
+                  : GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                      ),
+                      itemCount: _photos.length,
+                      itemBuilder: (context, index) {
+                        final photo = _photos[index];
+                        final imageUrl = widget.userService
+                            .getImageUrl(photo['image_id']); // URL gambar
+
+                        return Stack(
+                          children: [
+                            Image.network(
+                              imageUrl,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              right: 0,
+                              child: IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () =>
+                                    _deletePhoto(photo['image_id']),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
             ),
           ],
         ),
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          FloatingActionButton.extended(
-            onPressed: _captureAndDetectFace,
-            label: Row(
-              children: [
-                Icon(Icons.camera_alt),
-                SizedBox(width: 5),
-                Text('Ambil Dataset'),
-              ],
-            ),
-          ),
-          FloatingActionButton.extended(
-            onPressed: () {
-              setState(() {
-                _result = 'Testing dataset not implemented.';
-              });
-            },
-            label: Row(
-              children: [
-                Icon(Icons.face),
-                SizedBox(width: 5),
-                Text('Test Dataset'),
-              ],
-            ),
-          ),
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
-  }
-
-  @override
-  void dispose() {
-    _cameraController.dispose();
-    super.dispose();
   }
 }

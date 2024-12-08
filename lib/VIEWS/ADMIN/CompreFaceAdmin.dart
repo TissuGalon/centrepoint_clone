@@ -4,6 +4,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:policy_centrepoint/COMPONENT/BrowserOpener.dart';
 import 'package:policy_centrepoint/COMPONENT/shimmer_custom.dart';
 import 'package:policy_centrepoint/CONFIGURATION/configuration.dart';
+import 'package:policy_centrepoint/VIEWS/ADMIN/CompreFaceAdmin/CompreDetect.dart';
 import 'package:policy_centrepoint/VIEWS/ADMIN/CompreFaceAdmin/CompreLogs.dart';
 import 'package:policy_centrepoint/VIEWS/ADMIN/CompreFaceAdmin/CompreSetting.dart';
 import 'package:policy_centrepoint/VIEWS/ADMIN/CompreFaceAdmin/CompreUSers.dart';
@@ -113,7 +114,7 @@ class _CompreFaceAdminState extends State<CompreFaceAdmin> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CompreSettingPage(),
+                        builder: (context) => CompreDetect(),
                       ),
                     );
                   },

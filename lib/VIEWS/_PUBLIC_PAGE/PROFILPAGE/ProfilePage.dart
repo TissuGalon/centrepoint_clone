@@ -3,6 +3,7 @@ import 'package:policy_centrepoint/COMPONENT/shimmer_custom.dart';
 import 'package:policy_centrepoint/CONFIGURATION/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:policy_centrepoint/CONTROLLER/AuthProcess.dart';
+import 'package:policy_centrepoint/VIEWS/ADMIN/CompreFaceAdmin/Service/CompreUserService.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/AUTH/LoginPage.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/FaceDetection/FaceDatasetPage.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/PROFILPAGE/MyProfile.dart';
@@ -42,6 +43,8 @@ class _ProfilPageState extends State<ProfilPage> {
     // Add more image URLs here
   ];
   //IMAGE URL
+
+  final UserService _userService = UserService();
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +214,9 @@ class _ProfilPageState extends State<ProfilPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => FaceDatasetPage()),
+                          builder: (context) => FaceDatasetPage(
+                              username: '${userData!['username']}',
+                              userService: _userService)),
                     );
                   },
                   leading: Icon(
