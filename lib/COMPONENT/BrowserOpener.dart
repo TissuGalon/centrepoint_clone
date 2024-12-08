@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:policy_centrepoint/CONFIGURATION/configuration.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class BrowserOpener extends StatefulWidget {
@@ -44,7 +45,27 @@ class _BrowserOpenerState extends State<BrowserOpener> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Browser')),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        actions: const [
+          Text(
+            'BROWSER',
+            style: TextStyle(
+                color: Color(0xFF222222),
+                fontFamily: 'URW',
+                fontWeight: FontWeight.bold,
+                fontSize: 18),
+          ),
+          SizedBox(
+            width: 10,
+          )
+        ],
+        iconTheme: IconThemeData(
+          color: Warna.TextBold, // Mengubah warna ikon drawer
+        ),
+      ),
       body: WebViewWidget(controller: controller),
     );
   }

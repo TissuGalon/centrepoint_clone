@@ -4,6 +4,7 @@ import 'package:policy_centrepoint/CONFIGURATION/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:policy_centrepoint/CONTROLLER/AuthProcess.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/AUTH/LoginPage.dart';
+import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/FaceDetection/FaceDatasetPage.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/PROFILPAGE/MyProfile.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/level_page.dart';
 
@@ -204,6 +205,38 @@ class _ProfilPageState extends State<ProfilPage> {
             /* ITEM */
             Column(
               children: [
+                /* ITEM 0 */
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FaceDatasetPage()),
+                    );
+                  },
+                  leading: Icon(
+                    TablerIcons.face_id,
+                    color: Colors.blueAccent,
+                  ),
+                  title: Text(
+                    'Dataset Wajah',
+                    style: TextStyle(
+                      color: Warna.TextBold,
+                      fontFamily: 'Graphik',
+                      fontSize: 14,
+                    ),
+                  ),
+                  trailing: Icon(
+                    TablerIcons.chevron_right,
+                    color: Warna.TextBold,
+                  ),
+                  tileColor: Warna.BG,
+                ),
+                Divider(
+                  color: const Color.fromARGB(255, 232, 232, 232),
+                  thickness: 1,
+                  height: 1,
+                ),
                 /* ITEM 1 */
                 ListTile(
                   onTap: () {

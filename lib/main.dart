@@ -7,6 +7,7 @@ import 'package:policy_centrepoint/CONFIGURATION/configuration.dart';
 import 'package:policy_centrepoint/CONTROLLER/AuthProcess.dart';
 import 'package:policy_centrepoint/CONTROLLER/PointController.dart';
 import 'package:policy_centrepoint/SQLiteTEST/SQLiteTEST.dart';
+import 'package:policy_centrepoint/VIEWS/ADMIN/AdminAppsPage.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/APPSPAGE/AppsPage.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/AUTH/LoginPage.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/AbsensiPAge/AbsensiPage.dart';
@@ -16,6 +17,7 @@ import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/PROFILPAGE/ProfilePage.dar
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -74,7 +76,7 @@ class _MainPageState extends State<MainPage> {
     HomePage(),
     BeritaPage(),
     AbsensiPage(),
-    AppsPage(),
+    AdminAppsPage(),
     ProfilPage(),
   ];
 
@@ -82,7 +84,7 @@ class _MainPageState extends State<MainPage> {
     HomePage(),
     BeritaPage(),
     AbsensiPage(),
-    AppsPage(),
+    AdminAppsPage(),
     ProfilPage(),
   ];
 
@@ -90,7 +92,7 @@ class _MainPageState extends State<MainPage> {
     HomePage(),
     BeritaPage(),
     AbsensiPage(),
-    AppsPage(),
+    AdminAppsPage(),
     ProfilPage(),
   ];
 
@@ -98,7 +100,7 @@ class _MainPageState extends State<MainPage> {
     HomePage(),
     BeritaPage(),
     AbsensiPage(),
-    AppsPage(),
+    AdminAppsPage(),
     ProfilPage(),
   ];
 

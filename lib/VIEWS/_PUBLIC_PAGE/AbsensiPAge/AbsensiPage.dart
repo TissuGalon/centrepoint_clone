@@ -2,6 +2,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:policy_centrepoint/CONFIGURATION/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/AbsensiPAge/AbsenCepat.dart';
+import 'package:policy_centrepoint/VIEWS/_PUBLIC_PAGE/AbsensiPAge/AbsensiListPage.dart';
 
 class AbsensiPage extends StatefulWidget {
   @override
@@ -33,30 +34,39 @@ class _AbsensiPageState extends State<AbsensiPage> {
                 Row(
                   children: [
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        margin: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16)),
-                        child: Column(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.all(10),
-                              child: Image.asset(
-                                'assets/icon/3d-conference.png',
-                                fit: BoxFit.cover,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AbsensiListPage()),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          margin: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Column(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.all(10),
+                                child: Image.asset(
+                                  'assets/icon/3d-conference.png',
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Absensi Rapat'.toUpperCase(),
-                              style: TextStyle(
-                                  color: Warna.TextBold,
-                                  fontFamily: 'URW',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            ),
-                          ],
+                              Text(
+                                'Absensi Rapat'.toUpperCase(),
+                                style: TextStyle(
+                                    color: Warna.TextBold,
+                                    fontFamily: 'URW',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
